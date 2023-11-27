@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from './Button/Button';
 import { ImageGallery } from './ImageGallery/ImageGallery';
@@ -8,31 +8,40 @@ import { SearchBar } from './SearchBar/SearchBar';
 import { ToastContainer, toast, Flip } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export class App extends Component {
-  state = {
-    images: [],
-    isLoading: false,
-    error: null,
-    query: '',
-    page: 1,
-    showModal: false,
-    selectedImage: null,
-    isLastPage: false,
-  };
+export const App = () => {
+  // state = {
+  //   images: [],
+  //   isLoading: false,
+  //   error: null,
+  //   query: '',
+  //   page: 1,
+  //   showModal: false,
+  //   selectedImage: null,
+  //   isLastPage: false,
+  // };
 
-  componentDidUpdate(_prevProps, prevState) {
-    if (prevState.query !== this.state.query) {
-      this.setState({ images: [], page: 1, isLastPage: false }, () => {
-        this.fetchImages();
-      });
-    }
-  }
+  const [images, setImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isLastPage, setIsLastPage] = useState(false);
 
-  fetchImages = () => {
-    const { query, page } = this.state;
+  // componentDidUpdate(_prevProps, prevState) {
+  //   if (prevState.query !== this.state.query) {
+  //     this.setState({ images: [], page: 1, isLastPage: false }, () => {
+  //       this.fetchImages();
+  //     });
+  //   }
+  // }
+
+  const fetchImages = () => {
+    // const { query, page } = this.state;
     const API_KEY = '39429562-362aa611c83bf0adbf53209b3';
 
-    this.setState({ isLoading: true });
+    setIsLoading(true);
 
     axios
       .get(
@@ -64,6 +73,7 @@ export class App extends Component {
             prevState.images.length + modifiedHits.length >= totalHits,
         }));
       })
+
       .catch(error => {
         this.setState({ error: error.message });
       })
@@ -72,7 +82,7 @@ export class App extends Component {
       });
   };
 
-  handleSearchSubmit = query => {
+  const handleSearchSubmit = query => {
     if (this.state.query === query) {
       return;
     }
@@ -85,48 +95,45 @@ export class App extends Component {
     });
   };
 
-  handleImageClick = image => {
+  const handleImageClick = image => {
     this.setState({ selectedImage: image, showModal: true });
     document.body.style.overflow = 'hidden';
   };
 
-  handleModalClose = () => {
+  const handleModalClose = () => {
     this.setState({ selectedImage: null, showModal: false });
     document.body.style.overflow = 'auto';
   };
 
-  render() {
-    const { images, isLoading, error, showModal, selectedImage, isLastPage } =
-      this.state;
+  // render() {
+  //   const { images, isLoading, error, showModal, selectedImage, isLastPage } =
+  //     this.state;
 
-    return (
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr',
-          paddingBottom: '24px',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontSize: 40,
-          color: '#010101',
-        }}
-      >
-        <ToastContainer transition={Flip} />
-        <SearchBar onSubmit={this.handleSearchSubmit} />
-        {error && <p>Error: {error}</p>}
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr',
+        paddingBottom: '24px',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontSize: 40,
+        color: '#010101',
+      }}
+    >
+      <ToastContainer transition={Flip} />
+      <SearchBar onSubmit={handleSearchSubmit} />
+      {error && <p>Error: {error}</p>}
 
-        <ImageGallery images={images} onItemClick={this.handleImageClick} />
+      <ImageGallery images={images} onItemClick={handleImageClick} />
 
-        {isLoading && <Loader />}
+      {isLoading && <Loader />}
 
-        {!isLoading && images.length > 0 && !isLastPage && (
-          <Button onClick={this.fetchImages} />
-        )}
+      {!isLoading && images.length > 0 && !isLastPage && (
+        <Button onClick={fetchImages} />
+      )}
 
-        {showModal && (
-          <Modal image={selectedImage} onClose={this.handleModalClose} />
-        )}
-      </div>
-    );
-  }
-}
+      {showModal && <Modal image={selectedImage} onClose={handleModalClose} />}
+    </div>
+  );
+};
