@@ -36,8 +36,12 @@ export const App = () => {
   //     });
   //   }
   // }
+  useEffect(() => {
+    if (!query) {
+      return;
+    }
 
-  const fetchImages = () => {
+  fetchImages(query, page) => {
     // const { query, page } = this.state;
     const API_KEY = '39429562-362aa611c83bf0adbf53209b3';
 
@@ -66,6 +70,7 @@ export const App = () => {
           })
         );
 
+        
         this.setState(prevState => ({
           images: [...prevState.images, ...modifiedHits],
           page: prevState.page + 1,
@@ -96,12 +101,16 @@ export const App = () => {
   };
 
   const handleImageClick = image => {
-    this.setState({ selectedImage: image, showModal: true });
+    // this.setState({ selectedImage: image, showModal: true });
+    setSelectedImage(image);
+    setShowModal(true);
     document.body.style.overflow = 'hidden';
   };
 
-  const handleModalClose = () => {
-    this.setState({ selectedImage: null, showModal: false });
+   const handleModalClose = () => {
+    // this.setState({ selectedImage: null, showModal: false });
+    setSelectedImage(null);
+    setShowModal(false)
     document.body.style.overflow = 'auto';
   };
 
@@ -135,5 +144,5 @@ export const App = () => {
 
       {showModal && <Modal image={selectedImage} onClose={handleModalClose} />}
     </div>
-  );
-};
+   );
+  };
